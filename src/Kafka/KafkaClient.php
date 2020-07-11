@@ -62,6 +62,7 @@ class KafkaClient
         $rk = new RdKafka\Producer($conf);
         $topic = $rk->newTopic($topic);
         $topic->produce(RD_KAFKA_PARTITION_UA, 0, $msg);
+        $rk->flush(2);
     }
 
     /**
@@ -95,7 +96,7 @@ class KafkaClient
             $message = $consumer->consume(1000);
             switch ($message->err) {
                 case RD_KAFKA_RESP_ERR_NO_ERROR:
-                    $msgs[] = $message['payload'];
+                    $msgs[] = ['t_name'=>$message['topic_name'],'msg'=>$message['payload']];
                     break;
                 case RD_KAFKA_RESP_ERR__PARTITION_EOF:
 //                    echo "No more messages; will wait for more\n";
