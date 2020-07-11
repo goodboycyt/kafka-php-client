@@ -1,0 +1,18 @@
+{
+    "name": "lwt/kafka-php-sdk",
+    "description": "a php client to use kafka,require rdkafka ext",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "lwt",
+            "email": "1836096205@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-4": {"kafka\\": "src/Kafka"}
+    }
+}
