@@ -1,5 +1,5 @@
 {
-    "name": "lwt/kafka-php-sdk",
+    "name": "linwanfeng/kafka-php-sdk",
     "description": "a php client to use kafka,require rdkafka ext",
     "type": "library",
     "license": "MIT",
