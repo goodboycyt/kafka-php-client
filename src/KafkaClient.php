@@ -90,14 +90,14 @@ class KafkaClient
         if (!is_numeric($groupId) || empty($topic)) {
             throw new KafkaException(['code'=>138,'message'=>'topic or groupId is empty']);
         }
-        $conf = new RdKafka\Conf();
+        $conf = new \RdKafka\Conf();
         $conf->set('api.version.request', 'true');
         $conf->set('api.version.request.timeout.ms', $this->versionTimeOut);
 //        $conf->set('queue.buffering.max.ms', 1);
         $conf->set('group.id', $groupId);
         $conf->set('bootstrap.servers', $this->host);
-        self::$consumer = new RdKafka\KafkaConsumer($conf);
-        self::$consumer = subscribe($topic);
+        self::$consumer = new \RdKafka\KafkaConsumer($conf);
+        self::$consumer->subscribe($topic);
     }
     /**
      * get some messages
