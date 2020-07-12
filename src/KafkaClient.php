@@ -45,60 +45,13 @@ class KafkaClient
      */
     public function sendMsg($topic, $msg, $flushTime = 10, $part = 0)
     {
-        if (empty($topic) || empty($msg)) {
-            throw new KafkaException(['code'=>48,'message'=>'topic or msg is empty']);
+        if (empty($topic) || empty($msg) || self::$producer==null) {
+            throw new KafkaException(['code'=>48,'message'=>'topic or msg or producer is empty']);
         }
         $topic = self::$producer->newTopic($topic);
         $topic->produce(RD_KAFKA_PARTITION_UA, $part, $msg);
         self::$producer->flush($flushTime);
 
-    }
-
-    /**
-     * Consumer a message
-     *
-     * Nothing to say.
-     *
-     * @param array $topic which topic to get
-     * @param string $num how much msg to get
-     * @param integer $part which partition
-     * @return array $mags
-     * @throws KafkaException
-     */
-    public function ConsumerMsg($topic, $num, $part = 0)
-    {
-        if (empty($topic) || !is_numeric($num)) {
-            throw new KafkaException(['code'=>70,'message'=>'topic or num is empty']);
-        }
-        $conf = new RdKafka\Conf();
-        $conf->set('api.version.request', 'true');
-        $conf->set('message.send.max.retries', 2);
-        $conf->set('api.version.request.timeout.ms', 5);
-//        $conf->set('queue.buffering.max.ms', 1);
-        $conf->set('group.id', $this->groupId);
-        $conf->set('bootstrap.servers', $this->host);
-        $consumer = new RdKafka\KafkaConsumer($conf);
-
-        $consumer->subscribe($topic);
-        $msgs = [];
-        for ($i = 0; $i < $num; $i++) {
-            $message = $consumer->consume(1000);
-            switch ($message->err) {
-                case RD_KAFKA_RESP_ERR_NO_ERROR:
-                    $msgs[] = ['t_name'=>$message['topic_name'],'msg'=>$message['payload']];
-                    break;
-                case RD_KAFKA_RESP_ERR__PARTITION_EOF:
-//                    echo "No more messages; will wait for more\n";
-                    break;
-                case RD_KAFKA_RESP_ERR__TIMED_OUT:
-//                    echo "Timed out\n";
-                    break;
-                default:
-                    throw new \Exception($message->errstr(), $message->err);
-                    break;
-            }
-        }
-        return $msgs;
     }
 
     /**
@@ -123,9 +76,70 @@ class KafkaClient
         $conf->set('bootstrap.servers', $this->host);
         self::$producer = new \RdKafka\Producer($conf);
     }
+    /**
+     * create a Consumer
+     *
+     * Nothing to say.
+     *
+     * @param array $topic topics which you subscribe
+     * @param int $groupId consumer groupid
+     * @throws KafkaException
+     */
+    public function initConsumer($topic, $groupId)
+    {
+        if (!is_numeric($groupId) || empty($topic)) {
+            throw new KafkaException(['code'=>138,'message'=>'topic or groupId is empty']);
+        }
+        $conf = new RdKafka\Conf();
+        $conf->set('api.version.request', 'true');
+        $conf->set('api.version.request.timeout.ms', $this->versionTimeOut);
+//        $conf->set('queue.buffering.max.ms', 1);
+        $conf->set('group.id', $groupId);
+        $conf->set('bootstrap.servers', $this->host);
+        self::$consumer = new RdKafka\KafkaConsumer($conf);
+        self::$consumer = subscribe($topic);
+    }
+    /**
+     * get some messages
+     *
+     * Nothing to say.
+     *
+     * @param integer $num how much msg you want get
+     * @param integer $timeout read timeout
+     * @throws KafkaException
+     * @return array
+     */
+    public function getMsg($num, $timeout = 10)
+    {
+        if (!is_numeric($num) || self::$consumer==null) {
+            throw new KafkaException(['code'=>115,'message'=>'num or consumer is empty']);
+        }
+        $msgs = [];
+        for ($i = 0; $i < $num; $i++) {
+            $message = self::$consumer->consume($timeout);
+            switch ($message->err) {
+                case RD_KAFKA_RESP_ERR_NO_ERROR:
+                    $msgs[] = ['t_name'=>$message['topic_name'],'msg'=>$message['payload']];
+                    break;
+                case RD_KAFKA_RESP_ERR__PARTITION_EOF:
+                    return $msgs;
+                    break;
+                case RD_KAFKA_RESP_ERR__TIMED_OUT:
+                    return $msgs;
+                    break;
+                default:
+                    throw new \Exception($message->errstr(), $message->err);
+                    break;
+            }
+        }
+        return $msgs;
+
+    }
+
 
 
     private $host;
     private $versionTimeOut;
     private static $producer;
+    private static $consumer;
 }
