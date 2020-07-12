@@ -1,8 +1,5 @@
 <?php
-
-
-namespace Kafka;
-
+namespace KafkaPhp;
 
 class KafkaException extends \Exception
 {
