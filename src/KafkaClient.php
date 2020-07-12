@@ -111,7 +111,7 @@ class KafkaClient
      */
     public function initProducer($queueBufferMaxTime)
     {
-        if (empty($queueBufferMaxTime)) {
+        if (!is_numeric($queueBufferMaxTime)) {
             throw new KafkaException(['code'=>115,'message'=>'queueBufferMaxTime is empty']);
         }
         $conf = new \RdKafka\Conf();
