@@ -119,7 +119,7 @@ class KafkaClient
             $message = self::$consumer->consume($timeout);
             switch ($message->err) {
                 case RD_KAFKA_RESP_ERR_NO_ERROR:
-                    $msgs[] = ['t_name'=>$message['topic_name'],'msg'=>$message['payload']];
+                    $msgs[] = ['t_name'=>$message->topic_name,'msg'=>$message->payload, 'off'=>$message->offset];
                     break;
                 case RD_KAFKA_RESP_ERR__PARTITION_EOF:
                     return $msgs;
