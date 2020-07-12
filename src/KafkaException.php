@@ -8,8 +8,7 @@ class KafkaException extends \Exception
     function __construct($details)
     {
         if (is_array($details)) {
-            $message = $details['code'] . ': ' . $details['message']
-                . ' RequestId: ' . $details['request-id'];
+            $message = $details['code'] . ': ' . $details['message'];
             parent::__construct($message);
             $this->details = $details;
         } else {

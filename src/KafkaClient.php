@@ -1,7 +1,7 @@
 <?php
 namespace KafkaPhp;
 
-use KafkaPhp\KafkaException as KE;
+require 'KafkaException.php';
 
 /**
  * Class KafkaClient
@@ -26,7 +26,7 @@ class KafkaClient
     {
         $host = trim($host);
         if (empty($host) ) {
-            throw new KE("host is empty");
+            throw new KafkaException(['code'=>28,'message'=>'host is empty']);
         }
         $this->host = $host;
         $this->versionTimeOut = $versionTimeOut;
@@ -45,7 +45,7 @@ class KafkaClient
     public function sendMsg($topic, $msg, $part = 0)
     {
         if (empty($topic) || empty($msg)) {
-            throw new KE("topic or msg is empty");
+            throw new KafkaException(['code'=>48,'message'=>'topic or msg is empty']);
         }
         $topic = self::$producer->newTopic($topic);
         $topic->produce(RD_KAFKA_PARTITION_UA, $part, $msg);
@@ -67,7 +67,7 @@ class KafkaClient
     public function ConsumerMsg($topic, $num, $part = 0)
     {
         if (empty($topic) || !is_numeric($num)) {
-            throw new KafkaException("topic or num is empty");
+            throw new KafkaException(['code'=>70,'message'=>'topic or num is empty']);
         }
         $conf = new RdKafka\Conf();
         $conf->set('api.version.request', 'true');
@@ -112,7 +112,7 @@ class KafkaClient
     public function initProducer($queueBufferMaxTime)
     {
         if (empty($queueBufferMaxTime)) {
-            throw new KE("queueBufferMaxTime is empty");
+            throw new KafkaException(['code'=>115,'message'=>'queueBufferMaxTime is empty']);
         }
         $conf = new \RdKafka\Conf();
         $conf->set('api.version.request', 'true');
