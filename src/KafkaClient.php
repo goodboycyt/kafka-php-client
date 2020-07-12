@@ -120,7 +120,7 @@ class KafkaClient
         $conf->set('api.version.request.timeout.ms', $this->versionTimeOut);
         $conf->set('queue.buffering.max.ms', $queueBufferMaxTime);
         $conf->set('bootstrap.servers', $this->host);
-        $this->producer = new \RdKafka\Producer($conf);
+        self::$producer = new \RdKafka\Producer($conf);
     }
 
 
