@@ -19,23 +19,17 @@ class KafkaClient
      * Nothing to say.
      *
      * @param string $host The host of Kafka server with port like 193.23.1.1:9093
-     * @param integer $queueMaxTime Max time(ms) for queue buffer wait.
-     * @param integer $groupId If use consumer,set this value to your group id
+     * @param integer $versionTimeOut Max time(ms) for get api version.
      * @throws KafkaException
      */
-    public function __construct($host, $queueMaxTime, $groupId = 1)
+    public function __construct($host, $versionTimeOut)
     {
         $host = trim($host);
-
-        if (empty($host)) {
+        if (empty($host) ) {
             throw new KafkaException("host is empty");
         }
-        if (empty($queueMaxTime)) {
-            throw new KafkaException("queueMaxTime is empty");
-        }
         $this->host = $host;
-        $this->queueMaxTime = $queueMaxTime;
-        $this->groupId = $groupId;
+        $this->versionTimeOut = $versionTimeOut;
     }
 
     /**
@@ -48,21 +42,15 @@ class KafkaClient
      * @param integer $part which partition
      * @throws KafkaException
      */
-    public function prodecerMsg($topic, $msg, $part = 0)
+    public function sendMsg($topic, $msg, $part = 0)
     {
         if (empty($topic) || empty($msg)) {
             throw new KafkaException("topic or msg is empty");
         }
-        $conf = new \RdKafka\Conf();
-        $conf->set('api.version.request', 'true');
-        $conf->set('message.send.max.retries', 2);
-        $conf->set('api.version.request.timeout.ms', 5);
-        $conf->set('queue.buffering.max.ms', $this->queueMaxTime);
-        $conf->set('bootstrap.servers', $this->host);
-        $rk = new RdKafka\Producer($conf);
-        $topic = $rk->newTopic($topic);
-        $topic->produce(RD_KAFKA_PARTITION_UA, 0, $msg);
-        $rk->flush(2);
+        $topic = self::$producer->newTopic($topic);
+        $topic->produce(RD_KAFKA_PARTITION_UA, $part, $msg);
+        self::$producer->flush(10);
+
     }
 
     /**
@@ -112,7 +100,31 @@ class KafkaClient
         return $msgs;
     }
 
+    /**
+     * create a Producer
+     *
+     * Nothing to say.
+     *
+     * @param integer $queueBufferMaxTime Max time(ms) for queue buffer wait.
+     * @throws KafkaException
+     * @return object RdKafka\Producer
+     */
+    public function initProducer($queueBufferMaxTime)
+    {
+        if (empty($queueBufferMaxTime)) {
+            throw new KafkaException("queueBufferMaxTime is empty");
+        }
+        $conf = new \RdKafka\Conf();
+        $conf->set('api.version.request', 'true');
+        $conf->set('message.send.max.retries', 1);
+        $conf->set('api.version.request.timeout.ms', $this->versionTimeOut);
+        $conf->set('queue.buffering.max.ms', $queueBufferMaxTime);
+        $conf->set('bootstrap.servers', $this->host);
+        $this->producer = new RdKafka\Producer($conf);
+    }
+
+
     private $host;
-    private $queueMaxTime;
-    private $groupId;
+    private $versionTimeOut;
+    private static $producer;
 }
