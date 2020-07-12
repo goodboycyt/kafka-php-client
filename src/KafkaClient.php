@@ -40,16 +40,17 @@ class KafkaClient
      * @param string $topic which topic to send
      * @param string $msg msg body
      * @param integer $part which partition
+     * @param integer $flushTime flush time before you destory producer instance
      * @throws KafkaException
      */
-    public function sendMsg($topic, $msg, $part = 0)
+    public function sendMsg($topic, $msg, $flushTime = 10, $part = 0)
     {
         if (empty($topic) || empty($msg)) {
             throw new KafkaException(['code'=>48,'message'=>'topic or msg is empty']);
         }
         $topic = self::$producer->newTopic($topic);
         $topic->produce(RD_KAFKA_PARTITION_UA, $part, $msg);
-        self::$producer->flush(10);
+        self::$producer->flush($flushTime);
 
     }
 
