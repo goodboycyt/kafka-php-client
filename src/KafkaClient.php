@@ -95,7 +95,8 @@ class KafkaClient
         $conf->set('api.version.request.timeout.ms', $this->versionTimeOut);
 //        $conf->set('queue.buffering.max.ms', 1);
         $conf->set('group.id', $groupId);
-        $conf->set('bootstrap.servers', $this->host);
+        $conf->set('auto.offset.reset', 'smallest');
+        $conf->set('metadata.broker.list', $this->host);
         self::$consumer = new \RdKafka\KafkaConsumer($conf);
         self::$consumer->subscribe($topic);
     }
