@@ -50,7 +50,7 @@ class KafkaClient
         }
         $topic = self::$producer->newTopic($topic);
         $topic->produce(RD_KAFKA_PARTITION_UA, $part, $msg);
-        self::$producer->flush($flushTime);
+//        self::$producer->flush($flushTime);//由于php版本 去除
 
     }
 
