@@ -22,7 +22,7 @@ use kafkaPhp\KafkaSkProducer;
 use kafkaPhp\KafkaException;
 try{
    $kafkaClient = new KafkaSkProducer('***.***.*.***', '***');
-   $kafkaClient->sendMsg('topic', 'msg');
+   $response = $kafkaClient->sendMsg('topic', 'msg');
 }catch (KafkaException $e){
     echo $e->getErrorMessage();
 }

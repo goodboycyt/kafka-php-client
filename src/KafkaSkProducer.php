@@ -63,7 +63,7 @@ class KafkaSkProducer
                 throw new KafkaException(['code'=>63,'message'=>'socket 写入错误']);
             } else {
                 while ($callback = socket_read($this->socket, 2048)) {
-                    echo $callback;
+                    return $callback;
                     break;
                 }
             }
