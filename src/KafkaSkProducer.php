@@ -68,7 +68,7 @@ class KafkaSkProducer
                 }
             }
 //            socket_close($this->socket);//工作完毕，关闭套接流
-        }catch (\Exception $e){
+        }catch (\Exception $e) {
             throw new KafkaException(['code'=>71,'message'=>$e->getMessage()]);
         }
     }

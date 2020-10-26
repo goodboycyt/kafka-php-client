@@ -3,17 +3,28 @@
 ### composer install
 `composer require linwanfeng/kafka-php-sdk:dev-master`
 
-### Producer
+### Producer with Rdkafka
 ```php
 <?php
-use kafkaPhp\KafkaClient;
+use kafkaPhp\KafkaProducer;
 use kafkaPhp\KafkaException;
 try{
-    $kafkaClient = new KafkaClient('127.0.0.1:9092', 1000);
-    $kafkaClient->initProducer(0);
-    $kafkaClient->sendMsg('topic', 'msg', 1000);
+    $kafkaClient = new KafkaProducer('127.0.0.1:9092');
+    $kafkaClient->sendMsg('topic', 'msg');
 }catch (KafkaException $e){
     echo $e->getErrorMessage();die;
+}
+```
+### Producer with socket
+```php
+<?php
+use kafkaPhp\KafkaSkProducer;
+use kafkaPhp\KafkaException;
+try{
+   $kafkaClient = new KafkaSkProducer('***.***.*.***', '***');
+   $kafkaClient->sendMsg('topic', 'msg');
+}catch (KafkaException $e){
+    echo $e->getErrorMessage();
 }
 ```
 ### Consumer
