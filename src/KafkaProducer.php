@@ -57,7 +57,7 @@ class KafkaProducer
         $this->topic->produce(RD_KAFKA_PARTITION_UA, 0, $msg);
         usleep(1000);
         $this->producer->purge(RD_KAFKA_PURGE_F_QUEUE);
-        $this->producer->flush(10);
+        $this->producer->flush(20);
     }
 
     public function __destruct()
