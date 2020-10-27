@@ -3,6 +3,9 @@
 ### composer install
 `composer require linwanfeng/kafka-php-sdk:dev-master`
 
+### composer update
+`composer update linwanfeng/kafka-php-sdk:dev-master`
+
 ### Producer with Rdkafka
 ```php
 <?php
