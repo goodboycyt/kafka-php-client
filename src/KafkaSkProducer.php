@@ -45,6 +45,7 @@ class KafkaSkProducer
      *
      * @param string $msg msg body
      * @param string $topic which topic to push msg.
+     * @return false|string
      * @throws KafkaException
      */
     public function sendMsg($topic, $msg)
@@ -68,7 +69,7 @@ class KafkaSkProducer
                 }
             }
 //            socket_close($this->socket);//工作完毕，关闭套接流
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw new KafkaException(['code'=>71,'message'=>$e->getMessage()]);
         }
     }
