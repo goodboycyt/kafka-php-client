@@ -1,10 +1,10 @@
 ## kafka-php-client
 
 ### composer install
-`composer require linwanfeng/kafka-php-sdk:dev-master`
+`composer require linwanfeng/kafka-php-sdk:2.0`
 
 ### composer update
-`composer update linwanfeng/kafka-php-sdk:dev-master`
+`composer update linwanfeng/kafka-php-sdk`
 
 ### Producer with Rdkafka
 ```php
