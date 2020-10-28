@@ -57,10 +57,11 @@ class KafkaProducer
      *
      * Nothing to say.
      *
-     * @param string $msg msg body
      * @param string $topic which topic to push msg.
-     * @param integer $part which partition
+     * @param string $msg msg body
+     * @param bool $sync
      * @param integer $flushTime flush time before you destory producer instance
+     * @param integer $part which partition
      * @throws KafkaException
      */
     public function sendMsg($topic, $msg, $sync = false, $flushTime = 10, $part = 0)
