@@ -6,7 +6,7 @@
 ### composer update
 `composer update linwanfeng/kafka-php-sdk`
 
-### Producer with Rdkafka
+### Produce by Rdkafka
 ```php
 <?php
 use kafkaPhp\KafkaProducer;
@@ -18,7 +18,7 @@ try{
     echo $e->getErrorMessage();die;
 }
 ```
-### Producer with socket
+### Produce by socket
 ```php
 <?php
 use kafkaPhp\KafkaSkProducer;
