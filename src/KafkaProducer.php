@@ -46,7 +46,7 @@ class KafkaProducer
         $conf->set('log.connection.close', 'false');
         if (function_exists('pcntl_sigprocmask')) {
             pcntl_sigprocmask(SIG_BLOCK, array(SIGIO));
-            $this->conf->set('internal.termination.signal', SIGIO);//设置kafka客户端线程在其完成后立即终止
+            $conf->set('internal.termination.signal', SIGIO);//设置kafka客户端线程在其完成后立即终止
         }
         $this->producer = new \RdKafka\Producer($conf);
         $this->producer->addBrokers($host);
@@ -63,7 +63,7 @@ class KafkaProducer
      * @param integer $flushTime flush time before you destory producer instance
      * @throws KafkaException
      */
-    public function sendMsg($topic, $msg, $flushTime = 10, $part = 0)
+    public function sendMsg($topic, $msg, $sync = false, $flushTime = 10, $part = 0)
     {
         if (empty($msg) || empty($topic) || $this->producer==null) {
             throw new KafkaException(['code'=>48,'message'=>'topic or msg or producer is empty']);
@@ -74,13 +74,18 @@ class KafkaProducer
         $cf->set('message.timeout.ms', 5000);
         $this->topic = $this->producer->newTopic($topic, $cf);
         $this->topic->produce(RD_KAFKA_PARTITION_UA, 0, $msg);
-        while ($this->producer->getOutQLen() > 0) {
-            $this->producer->poll(1);
+        if (!$sync) {
+            do {
+                $this->producer->poll(1);
+            } while ($this->producer->getOutQLen() > 0);
         }
     }
 
     public function __destruct()
     {
+        while ($this->producer->getOutQLen() > 0) {
+            $this->producer->poll(1);
+        }
     }
 
     private $producer;
