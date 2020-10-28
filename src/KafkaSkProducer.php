@@ -21,6 +21,7 @@ class KafkaSkProducer
      * Nothing to say.
      *
      * @param string $host The host of Kafka server with port like 193.23.1.1:9093
+     * @param int $port 端口
      * @throws KafkaException
      */
     public function __construct($host, $port)
@@ -53,11 +54,10 @@ class KafkaSkProducer
         if (empty($msg) || empty($topic) || $this->socket==null) {
             throw new KafkaException(['code'=>55,'message'=>'topic or msg or socket is empty']);
         }
-
-            $data['topic'] = $topic;
-            $data['msg'] = $msg;
-            $message = json_encode($data);
-            $message = mb_convert_encoding($message, 'GBK', 'UTF-8');
+        $data['topic'] = $topic;
+        $data['msg'] = $msg;
+        $message = json_encode($data);
+        $message = mb_convert_encoding($message, 'GBK', 'UTF-8');
         try {
             if (socket_write($this->socket, $message, strlen($message)) == false) {
                 socket_close($this->socket);//工作完毕，关闭套接流
@@ -68,7 +68,6 @@ class KafkaSkProducer
                     break;
                 }
             }
-//            socket_close($this->socket);//工作完毕，关闭套接流
         } catch (\Exception $e) {
             throw new KafkaException(['code'=>71,'message'=>$e->getMessage()]);
         }
