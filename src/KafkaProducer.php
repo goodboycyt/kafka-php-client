@@ -85,5 +85,5 @@ class KafkaProducer
 
     private $producer;
     private $topic;
-    private $sendReport;
+    public $sendReport;
 }
