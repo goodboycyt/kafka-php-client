@@ -1,37 +1,52 @@
-## Welcome to GitHub Pages
+## kafka-php-client
 
-You can use the [editor on GitHub](https://github.com/goodboycyt/kafka-php-client/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+### composer install
+`composer require linwanfeng/kafka-php-sdk`
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### composer update
+`composer update linwanfeng/kafka-php-sdk`
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+### Produce by Rdkafka
+```php
+<?php
+use kafkaPhp\KafkaProducer;
+use kafkaPhp\KafkaException;
+try{
+    $kafkaClient = new KafkaProducer('127.0.0.1:9092');
+    $kafkaClient->sendMsg('topic', 'msg');
+}catch (KafkaException $e){
+    echo $e->getErrorMessage();die;
+}
 ```
+### Produce by socket
+```php
+<?php
+use kafkaPhp\KafkaSkProducer;
+use kafkaPhp\KafkaException;
+try{
+   $kafkaClient = new KafkaSkProducer('***.***.*.***', '***');
+   $response = $kafkaClient->sendMsg('topic', 'msg');
+}catch (KafkaException $e){
+    echo $e->getErrorMessage();
+}
+```
+### Consumer
+```php
+<?php
+require '../vendor/autoload.php';
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+use kafkaPhp\KafkaClient;
+use kafkaPhp\KafkaException;
 
-### Jekyll Themes
+try{
+    $kafkaClient = new KafkaClient('127.0.0.1:9092', 1000);
+    $kafkaClient->initConsumer(['topic1','topic2'], 1);
+    while(true){
+        $r = $kafkaClient->getMsg(2, 1000);
+        ...
+    }
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/goodboycyt/kafka-php-client/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+}catch (KafkaException $e){
+    echo $e->getErrorMessage();die;
+}
+```
