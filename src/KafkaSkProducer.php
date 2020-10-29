@@ -58,18 +58,14 @@ class KafkaSkProducer
         $data['msg'] = $msg;
         $message = json_encode($data);
         $message = mb_convert_encoding($message, 'GBK', 'UTF-8');
-        try {
-            if (socket_write($this->socket, $message, strlen($message)) == false) {
-                socket_close($this->socket);//工作完毕，关闭套接流
-                throw new KafkaException(['code'=>63,'message'=>'socket 写入错误']);
-            } else {
-                while ($callback = socket_read($this->socket, 2048)) {
-                    return $callback;
-                    break;
-                }
+        if (socket_write($this->socket, $message, strlen($message)) == false) {
+            socket_close($this->socket);//工作完毕，关闭套接流
+            throw new KafkaException(['code'=>63,'message'=>'socket 写入错误']);
+        } else {
+            while ($callback = socket_read($this->socket, 2048)) {
+                return $callback;
+                break;
             }
-        } catch (\Exception $e) {
-            throw new KafkaException(['code'=>71,'message'=>$e->getMessage()]);
         }
     }
 
