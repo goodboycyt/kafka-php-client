@@ -30,11 +30,11 @@ class KafkaSkProducer
         if (empty($host)) {
             throw new KafkaException(['code'=>30,'message'=>'host is empty']);
         }
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO, array("sec" => 1, "usec" => 10000));
-        socket_set_option($this->socket, SOL_SOCKET, SO_SNDTIMEO, array("sec" => 1, "usec" => 10000));
-        if (socket_connect($this->socket, $host, $port) == false) {
-            socket_close($this->socket);//工作完毕，关闭套接流
+        $this->socket = \socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        \socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO, array("sec" => 1, "usec" => 10000));
+        \socket_set_option($this->socket, SOL_SOCKET, SO_SNDTIMEO, array("sec" => 1, "usec" => 10000));
+        if (\socket_connect($this->socket, $host, $port) == false) {
+            \socket_close($this->socket);//工作完毕，关闭套接流
             throw new KafkaException(['code'=>37,'message'=>'host connect fail']);
         }
     }
@@ -58,11 +58,11 @@ class KafkaSkProducer
         $data['msg'] = $msg;
         $message = json_encode($data);
         $message = mb_convert_encoding($message, 'GBK', 'UTF-8');
-        if (socket_write($this->socket, $message, strlen($message)) == false) {
-            socket_close($this->socket);//工作完毕，关闭套接流
+        if (\socket_write($this->socket, $message, strlen($message)) == false) {
+            \socket_close($this->socket);//工作完毕，关闭套接流
             throw new KafkaException(['code'=>63,'message'=>'socket 写入错误']);
         } else {
-            while ($callback = socket_read($this->socket, 2048)) {
+            while ($callback = \socket_read($this->socket, 2048)) {
                 return $callback;
                 break;
             }
