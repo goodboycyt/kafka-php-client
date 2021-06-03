@@ -40,7 +40,7 @@ class KafkaProducer
         $conf->set('message.send.max.retries', 2);
         $conf->set('api.version.request.timeout.ms', 10000);
         $conf->set('queue.buffering.max.ms', 1);
-        $conf->set('bootstrap.servers', '172.30.2.187:9092');
+        $conf->set('bootstrap.servers', $host);
         $conf->set('topic.metadata.refresh.sparse', true);//仅获取自己用的元数据 减少带宽
         $conf->set('topic.metadata.refresh.interval.ms', 600000);//设置刷新元数据时间间隔为600s 减少带宽
         $conf->set('log.connection.close', 'false');
@@ -64,7 +64,7 @@ class KafkaProducer
      * @param integer $part which partition
      * @throws KafkaException
      */
-    public function sendMsg($topic, $msg, $sync = false, $flushTime = 10, $part = 0)
+    public function sendMsg($topic, $msg,$key=null, $sync = false, $flushTime = 10, $part = 0)
     {
         if (empty($msg) || empty($topic) || $this->producer==null) {
             throw new KafkaException(['code'=>48,'message'=>'topic or msg or producer is empty']);
@@ -74,7 +74,7 @@ class KafkaProducer
         $cf->set('request.timeout.ms', 5000);
         $cf->set('message.timeout.ms', 5000);
         $this->topic = $this->producer->newTopic($topic, $cf);
-        $this->topic->produce(RD_KAFKA_PARTITION_UA, 0, $msg);
+        $this->topic->produce(RD_KAFKA_PARTITION_UA, 0, $msg,$key);
         if (!$sync) {
             do {
                 $this->producer->poll(1);
