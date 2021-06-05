@@ -49,13 +49,14 @@ class KafkaSkProducer
      * @return false|string
      * @throws KafkaException
      */
-    public function sendMsg($topic, $msg)
+    public function sendMsg($topic, $msg, $key)
     {
         if (empty($msg) || empty($topic) || $this->socket==null) {
             throw new KafkaException(['code'=>55,'message'=>'topic or msg or socket is empty']);
         }
         $data['topic'] = $topic;
         $data['msg'] = $msg;
+        $data['key'] = $key;
         $message = json_encode($data);
         $message = mb_convert_encoding($message, 'GBK', 'UTF-8');
         if (\socket_write($this->socket, $message, strlen($message)) == false) {
